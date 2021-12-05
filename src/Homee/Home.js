@@ -1,42 +1,33 @@
-import React from "react";
-// import Popup from "../pages/popup/Popup";
+import React, { useState, useEffect } from "react";
+import { db, collection, getDocs} from "../firebase/Firebase";
+import Message from "../Message";
+import SignOut from "../signout/SignOut";0
 
-function Home() {
-//   const [team, setTeamName] = useState("");
-//   const [categoy, setCategory] = useState("");
-//   const [mEmail, setMEmail] = useState("");
-//   const [memberArray, setMemberArray] = useState(null);
+function Home({post}) {
+  const [messages, setMessages] = useState([]);
+  useEffect(() => {
+    getData();
+  });
 
-//   const addToArray = () => {
-//     let obj = {
-//       team: team,
-//       categoy: categoy,
-//       mEmail: mEmail,
-//     };
-//     console.log(memberArray);
-//     setMemberArray((memberArray) =>
-//       memberArray ? [obj, ...memberArray] : [obj]
-//     );
-//   };
+  const getData = async () => {
+    const subColRef = await collection(db, "teams");
+    const qSnap = await getDocs(subColRef);
+    qSnap.docs.map(d => setMessages([d.data(), ...messages]))
+  };
 
+
+console.log(messages)
   return (
     <div>
+      <SignOut />
+      <Message/>
 
-      {/* {memberArray &&
-        memberArray.length > 0 &&
-        memberArray.map((val, ind) => (
-          <div key={ind}>
-            <div> <span className="spanName">TeamName:</span> {val.team}</div>
-            <div><span  className="spanName">Category:</span> {val.categoy}</div>
-            <div><span  className="spanName">Members:</span> {val.mEmail}</div>
-          </div>
-        ))}
-      <Popup
-        setTeamName={setTeamName}
-        setCategory={setCategory}
-        setMEmail={setMEmail}
-        addToArray={addToArray}
-      /> */}
+      {messages.map(({ id, text}) => {
+        <div key={id}>
+          <p>{text}</p>
+        </div>;
+      })}
+
     </div>
   );
 }
